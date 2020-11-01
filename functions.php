@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Oxygen Translation 22
+ * Plugin Name:       Oxygen Translations
  * Description:       A plugin for translating text in Oxygen
  * Version:           1.0.0
  * Requires at least: 5.2
@@ -16,16 +16,31 @@ add_action( 'init', function () {
      * Post Type: Oxygen Templates.
      */
 
-    // var_dump( get_option( 'active_plugins', array() ), true );
-    // die();
-
+    
+    // require oxygen
     if ( ! is_plugin_active( 'oxygen3/functions.php' ) ) {
         error_log('oxygen3 not activated');
         return;
     }
-
+    
+    // require polylang
     if ( ! is_plugin_active( 'polylang/polylang.php' ) ) {
         error_log('polylang not activated');
+        return;
+    }
+
+    // var_dump( get_option( 'active_plugins', array() ), true );
+    // die();
+    // $switcher = new PLL_Switcher();
+	// $list = $switcher->the_languages( PLL()->links, [ 'raw'=>1 ] );
+    // var_dump( $list );
+
+    // var_dump( pll_languages_list() );
+    // die();
+
+    // require acf
+    if ( ! is_plugin_active( 'advanced-custom-fields-pro/acf.php' ) && ! is_plugin_active( 'advanced-custom-fields/acf.php' ) ) {
+        error_log('advanced-custom-fields not activated');
         return;
     }
 
@@ -67,7 +82,7 @@ add_action( 'init', function () {
         "singular_name" => __( "Oxygen Text", "custom-post-type-ui" ),
     ];
 
-    $args = [
+    register_post_type( "oxygentext", [
         "label" => __( "Oxygen Texts", "custom-post-type-ui" ),
         "labels" => $labels,
         "description" => "",
@@ -88,9 +103,84 @@ add_action( 'init', function () {
         "rewrite" => ["slug" => "oxygentext", "with_front" => true],
         "query_var" => true,
         "supports" => ["title"],
-    ];
+    ] );
 
-    register_post_type( "oxygentext", $args );
+    // TODO: get polylang languages
+    // https://polylang.wordpress.com/documentation/documentation-for-developers/functions-reference/
+
+    $langFields = [];
+
+    global $wpdb;
+
+    $result = $wpdb->get_results ( "
+        SELECT term_id, name, slug 
+        FROM wp_terms 
+        WHERE term_id IN (
+                            SELECT term_taxonomy_id 
+                            FROM wp_term_taxonomy 
+                            WHERE taxonomy='language'
+                        );
+    " );
+
+    foreach ( $result as $lang )
+    {
+        $langFields[] = array(
+            'key' => 'field_' . 'acf' . $lang->slug . $lang->term_id,
+            'label' => $lang->name,
+            'name' => $lang->slug,
+            'type' => 'text',
+            'instructions' => '',
+            'required' => 0,
+            'conditional_logic' => 0,
+            'wrapper' => array(
+                'width' => '',
+                'class' => '',
+                'id' => '',
+            ),
+            'default_value' => '',
+            'placeholder' => '',
+            'prepend' => '',
+            'append' => '',
+            'maxlength' => '',
+        );
+    }
+
+    acf_add_local_field_group( array(
+        'key' => 'group_5f159c125d1dc',
+        'title' => 'Oxygen Texts',
+        'fields' => $langFields,
+        'location' => array(
+            array(
+                array(
+                    'param' => 'post_type',
+                    'operator' => '==',
+                    'value' => 'oxygentext',
+                ),
+            ),
+        ),
+        'menu_order' => 0,
+        'position' => 'normal',
+        'style' => 'default',
+        'label_placement' => 'top',
+        'instruction_placement' => 'label',
+        'hide_on_screen' => array(
+            0 => 'the_content',
+            1 => 'excerpt',
+            2 => 'discussion',
+            3 => 'comments',
+            4 => 'revisions',
+            5 => 'slug',
+            6 => 'author',
+            7 => 'format',
+            8 => 'page_attributes',
+            9 => 'featured_image',
+            10 => 'categories',
+            11 => 'tags',
+            12 => 'send-trackbacks',
+        ),
+        'active' => true,
+        'description' => '',
+    ) );
 
     add_shortcode( 'template', function ( $atts = [], $content = null ) {
         if ( empty( $atts['name'] ) ) {
@@ -140,7 +230,7 @@ add_action( 'init', function () {
                 $wpdb->prepare(
                     "
                     SELECT ID
-                    FROM wp_posts
+                    FROM $wpdb->posts
                     WHERE post_title = %s
                         AND post_type = 'oxygentext'
                     ",
@@ -166,9 +256,11 @@ add_action( 'init', function () {
         }
 
         if ( empty( $result ) ) {
-            return 'Something is wrong, report to admin.';
+            return '';
         }
 
         return $result;
     } );
-} );
+
+
+}, 10000 );
