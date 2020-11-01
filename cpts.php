@@ -1,0 +1,100 @@
+<?php
+
+if ( function_exists( 'acf_add_local_field_group' ) ):
+
+    acf_add_local_field_group( array(
+        'key' => 'group_5f159c125d1dc',
+        'title' => 'Oxygen Texts',
+        'fields' => array(
+            array(
+                'key' => 'field_5f159c2678afd',
+                'label' => 'English',
+                'name' => 'en',
+                'type' => 'text',
+                'instructions' => '',
+                'required' => 0,
+                'conditional_logic' => 0,
+                'wrapper' => array(
+                    'width' => '',
+                    'class' => '',
+                    'id' => '',
+                ),
+                'default_value' => '',
+                'placeholder' => '',
+                'prepend' => '',
+                'append' => '',
+                'maxlength' => '',
+            ),
+            array(
+                'key' => 'field_5f159c3478afe',
+                'label' => 'Eesti',
+                'name' => 'et',
+                'type' => 'text',
+                'instructions' => '',
+                'required' => 0,
+                'conditional_logic' => 0,
+                'wrapper' => array(
+                    'width' => '',
+                    'class' => '',
+                    'id' => '',
+                ),
+                'default_value' => '',
+                'placeholder' => '',
+                'prepend' => '',
+                'append' => '',
+                'maxlength' => '',
+            ),
+            array(
+                'key' => 'field_5f159c4078aff',
+                'label' => 'Русский',
+                'name' => 'ru',
+                'type' => 'text',
+                'instructions' => '',
+                'required' => 0,
+                'conditional_logic' => 0,
+                'wrapper' => array(
+                    'width' => '',
+                    'class' => '',
+                    'id' => '',
+                ),
+                'default_value' => '',
+                'placeholder' => '',
+                'prepend' => '',
+                'append' => '',
+                'maxlength' => '',
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param' => 'post_type',
+                    'operator' => '==',
+                    'value' => 'oxygentext',
+                ),
+            ),
+        ),
+        'menu_order' => 0,
+        'position' => 'normal',
+        'style' => 'default',
+        'label_placement' => 'top',
+        'instruction_placement' => 'label',
+        'hide_on_screen' => array(
+            0 => 'the_content',
+            1 => 'excerpt',
+            2 => 'discussion',
+            3 => 'comments',
+            4 => 'revisions',
+            5 => 'slug',
+            6 => 'author',
+            7 => 'format',
+            8 => 'page_attributes',
+            9 => 'featured_image',
+            10 => 'categories',
+            11 => 'tags',
+            12 => 'send-trackbacks',
+        ),
+        'active' => true,
+        'description' => '',
+    ) );
+
+endif;
